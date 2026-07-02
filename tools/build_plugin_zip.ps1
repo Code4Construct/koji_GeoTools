@@ -19,6 +19,7 @@ New-Item -ItemType Directory -Path $stagingPlugin | Out-Null
 $excludeDirs = @(
     ".agents",
     ".git",
+    ".github",
     ".qodo",
     "__pycache__",
     "dist",
