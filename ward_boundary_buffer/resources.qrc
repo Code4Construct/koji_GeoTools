@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/ward_boundary_buffer" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

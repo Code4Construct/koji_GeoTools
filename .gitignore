@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.agents/
+.qodo/
+.idea/
+.vscode/
+
+dist/
+*.zip
+
+improvement.md
+IMPLEMENTATION_PLAN.md
+KOJIQGIS_DEVELOPMENT_PLAN.md
+
+merge_features_in_polygon/ChatGPT Image*.png
