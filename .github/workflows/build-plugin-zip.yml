@@ -36,7 +36,8 @@ jobs:
             throw "Plugin ZIP was not generated: ${{ env.ZIP_PATH }}"
           }
 
-          $entries = [IO.Compression.ZipFile]::OpenRead((Resolve-Path "${{ env.ZIP_PATH }}")).Entries.FullName
+          $entries = [IO.Compression.ZipFile]::OpenRead((Resolve-Path "${{ env.ZIP_PATH }}")).Entries.FullName |
+            ForEach-Object { $_ -replace '\\', '/' }
           $required = @(
             "${{ env.PLUGIN_NAME }}/metadata.txt",
             "${{ env.PLUGIN_NAME }}/__init__.py",
