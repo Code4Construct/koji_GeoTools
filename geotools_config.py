@@ -14,7 +14,7 @@ PRESETS = {
     'layer_sets_default': {
         'label': 'レイヤセット作成',
         'tool': 'add_sets_layers',
-        'description': 'CSVから施設統合用のレイヤセットを追加します。',
+        'description': 'CSVデータから施設配置検討用のレイヤセットを作成します。',
         'config': {
             'input': {
                 'csv_path': '',
@@ -34,9 +34,9 @@ PRESETS = {
         },
     },
     'ward_boundary_buffer': {
-        'label': '区境界＋円ポリゴン作成',
+        'label': '区境界＋2km バッファ',
         'tool': 'ward_boundary_buffer',
-        'description': '選択地物からバッファと区境界の輪郭を作成します。',
+        'description': '選択した地物から区境界や2kmバッファを作成します。',
         'config': {
             'geometry': {
                 'buffer_distance_m': 2000,
@@ -54,7 +54,7 @@ PRESETS = {
     'merge_features_in_polygon': {
         'label': 'ポリゴン内の地物抽出',
         'tool': 'merge_features_in_polygon',
-        'description': '選択ポリゴン内の表示中ポイント地物とポリゴン地物をGeoPackageへ保存します。',
+        'description': '選択ポリゴン内の表示中ポイント地物・ポリゴン地物を抽出して統合します。',
         'config': {
             'merge': {
                 'mode': 'merge',

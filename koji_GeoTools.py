@@ -186,21 +186,21 @@ class KojiGeoTools:
         self._add_tool(
             key='add_sets_layers',
             text=self.tr(u'レイヤセット作成'),
-            description=self.tr(u'施設統合ポテンシャルマップ用のレイヤセットをまとめて追加します。'),
+            description=self.tr(u'CSVデータから施設配置検討用のレイヤセットを作成します。座標フィールド、CRS、出力先GeoPackage、プロジェクトへの追加有無を設定できます。'),
             plugin_class=Add_Sets_Layers,
             icon_path=os.path.join(self.plugin_dir, 'add_sets_layers', 'icon.png'),
         )
         self._add_tool(
             key='ward_boundary_buffer',
-            text=self.tr(u'区境界＋円ポリゴン作成'),
-            description=self.tr(u'選択した地物から区境界とバッファを作成し、結果をレイヤとして保存します。'),
+            text=self.tr(u'区境界＋2km バッファ'),
+            description=self.tr(u'選択した地物から区境界と2kmバッファを作成し、結果をレイヤとして保存します。区域検討の下ごしらえをQGIS内で素早く進められます。'),
             plugin_class=WardBoundaryBuffer,
             icon_path=os.path.join(self.plugin_dir, 'ward_boundary_buffer', 'icon.png'),
         )
         self._add_tool(
             key='merge_features_in_polygon',
             text=self.tr(u'ポリゴン内の地物抽出'),
-            description=self.tr(u'選択したポリゴン内にある表示中のポイント地物とポリゴン地物を抽出します。'),
+            description=self.tr(u'選択ポリゴン内にある表示中のポイント地物・ポリゴン地物を抽出して統合します。スタイル継承やsource FID付与にも対応します。'),
             plugin_class=MergeFeaturesInPolygon,
             icon_path=os.path.join(self.plugin_dir, 'merge_features_in_polygon', 'icon.png'),
         )

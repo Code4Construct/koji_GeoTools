@@ -8,7 +8,7 @@ from qgis.core import QgsProject
 
 TOOL_FOLDERS = {
     'layer_sets_default': 'レイヤセットを保存',
-    'ward_boundary_buffer': '区境界＋バッファ作成',
+    'ward_boundary_buffer': '区境界＋2km バッファ',
     'merge_features_in_polygon': 'ポリゴン内の地物抽出',
 }
 
