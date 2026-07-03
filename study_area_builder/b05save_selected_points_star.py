@@ -57,6 +57,7 @@ def save_selected_points_as_red_star(
     gpkg_layer_name=None,
     overwrite_file=True,
     star_color="255,0,0,255",
+    star_shape="star",
     star_size_mm=5.0,
     star_outline_color="255,0,0,255",
     star_outline_width_mm=0.3
@@ -94,7 +95,7 @@ def save_selected_points_as_red_star(
     # ③ 赤い星型・5mm のシンボル設定
     # =========================
     symbol = QgsMarkerSymbol.createSimple({
-        "name": "star",
+        "name": star_shape,
         "color": star_color,
         "size": str(star_size_mm),
         "size_unit": "MM",
@@ -189,7 +190,7 @@ def save_selected_points_as_red_star(
 
         # 同じスタイルを設定
         saved_symbol = QgsMarkerSymbol.createSimple({
-            "name": "star",
+            "name": star_shape,
             "color": star_color,
             "size": str(star_size_mm),
             "size_unit": "MM",

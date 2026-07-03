@@ -42,6 +42,7 @@ PRESETS = {
                 'buffer_distance_m': 2000,
                 'dissolve': True,
                 'merge': True,
+                'join_admin_polygon': True,
             },
             'output': {
                 'gpkg_path': '',

@@ -6,6 +6,7 @@ import os
 
 from qgis.PyQt.QtWidgets import (
     QColorDialog,
+    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -41,8 +42,8 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
     def __init__(self, polygon_layer_names, parent=None):
         super().__init__(parent)
         self.setWindowTitle("調査エリア設定")
-        self.setMinimumSize(dpi_px(760), dpi_px(390))
-        self.resize(dpi_px(820), dpi_px(420))
+        self.setMinimumSize(dpi_px(760), dpi_px(440))
+        self.resize(dpi_px(820), dpi_px(470))
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(dpi_px(22), dpi_px(18), dpi_px(22), dpi_px(12))
@@ -96,10 +97,10 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
         detail_layout.setSpacing(dpi_px(16))
         layout.addLayout(detail_layout)
 
-        polygon_group = QGroupBox("ポリゴン枠")
-        star_group = QGroupBox("☆ポイント")
-        polygon_group.setMinimumHeight(dpi_px(190))
-        star_group.setMinimumHeight(dpi_px(190))
+        polygon_group = QGroupBox("調査ポリゴン枠")
+        star_group = QGroupBox("調査中心")
+        polygon_group.setMinimumHeight(dpi_px(235))
+        star_group.setMinimumHeight(dpi_px(215))
         polygon_form = QFormLayout()
         star_form = QFormLayout()
         polygon_form.setContentsMargins(dpi_px(12), dpi_px(12), dpi_px(12), dpi_px(12))
@@ -123,11 +124,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
         detail_layout.addWidget(star_group, 1)
 
         self.polygon_layer_name_edit = QLineEdit("selected_polygons_red_outline")
-        polygon_form.addRow("ポリゴン枠レイヤ名", self.polygon_layer_name_edit)
-
-        self.polygon_layer_combo = QComboBox()
-        self.polygon_layer_combo.addItems(polygon_layer_names)
-        polygon_form.addRow("結合するポリゴンレイヤ", self.polygon_layer_combo)
+        polygon_form.addRow("調査ポリゴン枠レイヤ名", self.polygon_layer_name_edit)
 
         self.center_mode_combo = QComboBox()
         self.center_mode_combo.addItem("ポイント地物を選択して描く", "point_feature")
@@ -148,22 +145,53 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
         self.outline_width_spin.setSingleStep(0.1)
         self.outline_width_spin.setSuffix(" mm")
         self.outline_width_spin.setValue(1.5)
-        polygon_form.addRow("ポリゴン枠の幅", self.outline_width_spin)
+        polygon_form.addRow("調査ポリゴン枠の幅", self.outline_width_spin)
 
         self.outline_color = "255,0,0,255"
         self.outline_color_button = QPushButton("選択")
         self.outline_color_button.clicked.connect(self.choose_outline_color)
         self.update_outline_color_button()
-        polygon_form.addRow("ポリゴン枠の色", self.outline_color_button)
+        polygon_form.addRow("調査ポリゴン枠の色", self.outline_color_button)
+
+        admin_polygon_layout = QVBoxLayout()
+        admin_polygon_layout.setContentsMargins(0, dpi_px(8), 0, 0)
+        admin_polygon_layout.setSpacing(dpi_px(6))
+
+        self.join_admin_polygon_check = QCheckBox("行政区域ポリゴンと結合する")
+        self.join_admin_polygon_check.setChecked(bool(polygon_layer_names))
+        admin_polygon_layout.addWidget(self.join_admin_polygon_check)
+
+        self.polygon_layer_combo = QComboBox()
+        self.polygon_layer_combo.addItems(polygon_layer_names)
+        self.last_admin_polygon_index = self.polygon_layer_combo.currentIndex()
+        self.polygon_layer_label = QLabel("結合するポリゴンレイヤ")
+        admin_polygon_row = QHBoxLayout()
+        admin_polygon_row.setContentsMargins(0, 0, 0, 0)
+        admin_polygon_row.setSpacing(dpi_px(10))
+        self.polygon_layer_label.setMinimumWidth(dpi_px(112))
+        admin_polygon_row.addWidget(self.polygon_layer_label)
+        admin_polygon_row.addWidget(self.polygon_layer_combo, 1)
+        admin_polygon_layout.addLayout(admin_polygon_row)
+        polygon_form.addRow(admin_polygon_layout)
+        self.join_admin_polygon_check.toggled.connect(self.update_admin_polygon_controls)
+        self.update_admin_polygon_controls()
 
         self.star_layer_name_edit = QLineEdit("selected_points_red_star")
-        star_form.addRow("☆ポイントレイヤ名", self.star_layer_name_edit)
+        star_form.addRow("調査中心レイヤ名", self.star_layer_name_edit)
+
+        self.star_shape_combo = QComboBox()
+        self.star_shape_combo.addItem("☆", "star")
+        self.star_shape_combo.addItem("〇", "circle")
+        self.star_shape_combo.addItem("□", "square")
+        self.star_shape_combo.addItem("△", "triangle")
+        self.star_shape_combo.addItem("＋", "cross")
+        star_form.addRow("調査中心の形", self.star_shape_combo)
 
         self.star_color = "255,0,0,255"
         self.star_color_button = QPushButton("選択")
-        self.star_color_button.clicked.connect(lambda: self.choose_color("star_color", self.star_color_button, "☆の色を選択"))
+        self.star_color_button.clicked.connect(lambda: self.choose_color("star_color", self.star_color_button, "調査中心の色を選択"))
         self.update_color_button(self.star_color_button, self.star_color)
-        star_form.addRow("☆の色", self.star_color_button)
+        star_form.addRow("調査中心の色", self.star_color_button)
 
         self.star_size_spin = QDoubleSpinBox()
         self.star_size_spin.setRange(0.1, 50.0)
@@ -171,13 +199,13 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
         self.star_size_spin.setSingleStep(0.5)
         self.star_size_spin.setSuffix(" mm")
         self.star_size_spin.setValue(5.0)
-        star_form.addRow("☆の大きさ", self.star_size_spin)
+        star_form.addRow("調査中心の大きさ", self.star_size_spin)
 
         self.star_outline_color = "255,0,0,255"
         self.star_outline_color_button = QPushButton("選択")
-        self.star_outline_color_button.clicked.connect(lambda: self.choose_color("star_outline_color", self.star_outline_color_button, "☆の枠線色を選択"))
+        self.star_outline_color_button.clicked.connect(lambda: self.choose_color("star_outline_color", self.star_outline_color_button, "調査中心の枠線色を選択"))
         self.update_color_button(self.star_outline_color_button, self.star_outline_color)
-        star_form.addRow("☆の枠線色", self.star_outline_color_button)
+        star_form.addRow("調査中心の枠線色", self.star_outline_color_button)
 
         self.star_outline_width_spin = QDoubleSpinBox()
         self.star_outline_width_spin.setRange(0.0, 20.0)
@@ -185,7 +213,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
         self.star_outline_width_spin.setSingleStep(0.1)
         self.star_outline_width_spin.setSuffix(" mm")
         self.star_outline_width_spin.setValue(0.3)
-        star_form.addRow("☆の枠線幅", self.star_outline_width_spin)
+        star_form.addRow("調査中心の枠線幅", self.star_outline_width_spin)
 
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
@@ -216,6 +244,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
                 "buffer_distance_m": self.radius_spin.value(),
                 "merge": True,
                 "dissolve": True,
+                "join_admin_polygon": self.join_admin_polygon_check.isChecked(),
                 "center_mode": self.center_mode_combo.currentData() or "point_feature",
                 "polygon_layer_name": self.polygon_layer_combo.currentText(),
             },
@@ -230,6 +259,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
                 "outline_color": self.outline_color,
                 "outline_width_mm": self.outline_width_spin.value(),
                 "star_layer_name": self.star_layer_name_edit.text().strip() or "selected_points_red_star",
+                "star_shape": self.star_shape_combo.currentData() or "star",
                 "star_color": self.star_color,
                 "star_size_mm": self.star_size_spin.value(),
                 "star_outline_color": self.star_outline_color,
@@ -257,6 +287,9 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
 
         if geometry.get("polygon_layer_name"):
             self._set_combo_value(self.polygon_layer_combo, geometry.get("polygon_layer_name"))
+        if geometry.get("join_admin_polygon") is not None:
+            self.join_admin_polygon_check.setChecked(bool(geometry.get("join_admin_polygon")))
+            self.update_admin_polygon_controls()
         if geometry.get("center_mode"):
             index = self.center_mode_combo.findData(geometry.get("center_mode"))
             if index >= 0:
@@ -271,6 +304,10 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
             self.outline_width_spin.setValue(float(style.get("outline_width_mm")))
         if style.get("star_layer_name"):
             self.star_layer_name_edit.setText(style.get("star_layer_name"))
+        if style.get("star_shape"):
+            index = self.star_shape_combo.findData(style.get("star_shape"))
+            if index >= 0:
+                self.star_shape_combo.setCurrentIndex(index)
         if style.get("star_color"):
             self.star_color = style.get("star_color")
             self.update_color_button(self.star_color_button, self.star_color)
@@ -290,6 +327,21 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
             return
         if combo.isEditable():
             combo.setEditText(value)
+
+    def update_admin_polygon_controls(self):
+        enabled = self.join_admin_polygon_check.isChecked()
+        self.polygon_layer_label.setEnabled(enabled)
+        self.polygon_layer_combo.setEnabled(enabled)
+        if enabled:
+            if self.polygon_layer_combo.currentIndex() < 0 and self.polygon_layer_combo.count() > 0:
+                restore_index = self.last_admin_polygon_index
+                if restore_index < 0 or restore_index >= self.polygon_layer_combo.count():
+                    restore_index = 0
+                self.polygon_layer_combo.setCurrentIndex(restore_index)
+        else:
+            if self.polygon_layer_combo.currentIndex() >= 0:
+                self.last_admin_polygon_index = self.polygon_layer_combo.currentIndex()
+            self.polygon_layer_combo.setCurrentIndex(-1)
 
     def load_preset(self):
         path = self.preset_path()
@@ -369,7 +421,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
             self.output_path_edit.setText(path)
 
     def choose_outline_color(self):
-        self.choose_color("outline_color", self.outline_color_button, "ポリゴン枠の色を選択")
+        self.choose_color("outline_color", self.outline_color_button, "調査ポリゴン枠の色を選択")
 
     def choose_color(self, property_name, button, title):
         current_color = getattr(self, property_name)
@@ -411,6 +463,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
             output_path += ".gpkg"
         return {
             "polygon_layer_name": self.polygon_layer_combo.currentText(),
+            "join_admin_polygon": self.join_admin_polygon_check.isChecked(),
             "center_mode": self.center_mode_combo.currentData() or "point_feature",
             "output_path": output_path,
             "star_layer_name": self.star_layer_name_edit.text().strip() or "selected_points_red_star",
@@ -420,6 +473,7 @@ class StudyAreaBuilderOutputSettingsDialog(QDialog):
             "buffer_distance_m": self.radius_spin.value(),
             "outline_width_mm": self.outline_width_spin.value(),
             "outline_color": self.outline_color,
+            "star_shape": self.star_shape_combo.currentData() or "star",
             "star_color": self.star_color,
             "star_size_mm": self.star_size_spin.value(),
             "star_outline_color": self.star_outline_color,
@@ -463,9 +517,6 @@ def visible_polygon_layers():
 def collect_study_area_builder_output_settings(iface):
     polygon_layers = visible_polygon_layers()
 
-    if not polygon_layers:
-        raise Exception("表示中のポリゴンレイヤがありません。ポリゴンレイヤを表示ONにしてください。")
-
     polygon_layer_names = [lyr.name() for lyr in polygon_layers]
 
     default_index = 0
@@ -480,6 +531,8 @@ def collect_study_area_builder_output_settings(iface):
     selected_polygon_layer_name = settings["polygon_layer_name"]
     if not settings["output_path"]:
         raise Exception("出力GeoPackageを指定してください。")
+    if settings.get("join_admin_polygon") and not selected_polygon_layer_name:
+        raise Exception("行政区域ポリゴンと結合する場合は、結合するポリゴンレイヤを指定してください。")
     return settings
 
 
@@ -521,16 +574,22 @@ def run_study_area_builder(iface, settings=None):
         overwrite_file=True,
         remove_source_if_memory=settings.get("center_mode") == "map_coordinate",
         star_color=settings["star_color"],
+        star_shape=settings.get("star_shape", "star"),
         star_size_mm=settings["star_size_mm"],
         star_outline_color=settings["star_outline_color"],
         star_outline_width_mm=settings["star_outline_width_mm"],
     )
-    b01.select_polygons_from_selected_points(selected_polygon_layer_name)
-    b02.create_selected_buffer(buffer_m=settings["buffer_distance_m"])
-    b03.dissolve_selected_polygons()
+    buffer_layer = b02.create_selected_buffer(buffer_m=settings["buffer_distance_m"])
+    if settings.get("join_admin_polygon", True):
+        b01.select_polygons_from_selected_points(selected_polygon_layer_name)
+        polygon_source_layer = b03.dissolve_selected_polygons()
+    else:
+        polygon_source_layer = buffer_layer
+
     polygon_layer, _ = b04.export_selected_polygons_with_red_outline(
         output_layer_name=settings["polygon_output_layer_name"],
         target_epsg=settings["target_crs"],
+        source_layer=polygon_source_layer,
         save_path=settings["output_path"],
         gpkg_layer_name=settings["polygon_output_layer_name"],
         overwrite_file=False,
