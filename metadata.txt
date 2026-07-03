@@ -1,11 +1,11 @@
 [general]
 name=Koji GeoTools
 qgisMinimumVersion=3.28
-description=Project-based layer set, ward boundary buffer, and polygon feature extraction tools for QGIS.
+description=Project-based layer set, 調査エリア設定, and polygon feature extraction tools for QGIS.
 version=0.2
 author=Code4Construct
 email=ubonira@gmail.com
-about=Koji GeoTools provides a single QGIS launcher for project-based geoprocessing workflows: creating layer sets from CSV data, generating ward boundary buffers, and extracting visible point or polygon features inside selected polygons. Configuration files are created in the QGIS project folder; no bundled presets are required.
+about=Koji GeoTools provides a single QGIS launcher for project-based geoprocessing workflows: creating layer sets from CSV data, building study areas from boundaries and buffers, and extracting visible point or polygon features inside selected polygons. Configuration files are created in the QGIS project folder; no bundled presets are required.
 tracker=https://github.com/Code4Construct/koji_GeoTools/issues
 repository=https://github.com/Code4Construct/koji_GeoTools
 hasProcessingProvider=no

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/ward_boundary_buffer" >
+    <qresource prefix="/plugins/study_area_builder" >
         <file>icon.png</file>
     </qresource>
 </RCC>

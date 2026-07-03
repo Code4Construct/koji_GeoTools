@@ -26,7 +26,7 @@ from .kgt_paths import project_kgt_root
 from .merge_features_in_polygon.merge_features_in_polygon import (
     MergeFeaturesInPolygon,
 )
-from .ward_boundary_buffer.ward_boundary_buffer import WardBoundaryBuffer
+from .study_area_builder.study_area_builder import StudyAreaBuilder
 from .ui_scaling import display_metrics_text, dpi_px
 
 
@@ -191,11 +191,11 @@ class KojiGeoTools:
             icon_path=os.path.join(self.plugin_dir, 'add_sets_layers', 'icon.png'),
         )
         self._add_tool(
-            key='ward_boundary_buffer',
-            text=self.tr(u'区境界＋2km バッファ'),
-            description=self.tr(u'選択した地物から区境界と2kmバッファを作成し、結果をレイヤとして保存します。区域検討の下ごしらえをQGIS内で素早く進められます。'),
-            plugin_class=WardBoundaryBuffer,
-            icon_path=os.path.join(self.plugin_dir, 'ward_boundary_buffer', 'icon.png'),
+            key='study_area_builder',
+            text=self.tr(u'調査エリア設定'),
+            description=self.tr(u'選択地点や地図上の座標を中心に、任意の半径で調査エリア円を作成・保存できます。行政区域と結合した調査エリアの設定にも対応しています。'),
+            plugin_class=StudyAreaBuilder,
+            icon_path=os.path.join(self.plugin_dir, 'study_area_builder', 'icon.png'),
         )
         self._add_tool(
             key='merge_features_in_polygon',

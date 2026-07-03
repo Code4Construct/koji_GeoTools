@@ -5,7 +5,7 @@ import importlib
 from .add_sets_layers import add_csv_vector_layer
 from .geotools_config import ExecutionLog, normalize_config
 from .merge_features_in_polygon import merge_visible_features_in_selected_polygon
-from .ward_boundary_buffer import ward_boundary_buffer_frame
+from .study_area_builder import study_area_builder_frame
 
 
 class ConfigurableToolRunner:
@@ -23,8 +23,8 @@ class ConfigurableToolRunner:
         try:
             if tool == 'add_sets_layers':
                 result = self._run_layer_sets(normalized, log)
-            elif tool == 'ward_boundary_buffer':
-                result = self._run_ward_boundary_buffer(normalized, log)
+            elif tool == 'study_area_builder':
+                result = self._run_study_area_builder(normalized, log)
             elif tool == 'merge_features_in_polygon':
                 result = self._run_merge_features(normalized, log)
             else:
@@ -72,15 +72,15 @@ class ConfigurableToolRunner:
         log.info('Layer set result: {0}'.format(result))
         return result
 
-    def _run_ward_boundary_buffer(self, config, log):
+    def _run_study_area_builder(self, config, log):
         geometry = config.get('geometry') or {}
         buffer_distance_m = geometry.get('buffer_distance_m')
         if buffer_distance_m not in (None, 2000):
             log.warning('Custom buffer distance is recorded in config but the interactive workflow currently uses its dialog value.')
         if geometry.get('dissolve') is False:
             log.warning('Dissolve=false is recorded in config but the legacy workflow currently dissolves output.')
-        result = ward_boundary_buffer_frame.run_ward_boundary_buffer(self.iface)
-        log.info('Ward boundary buffer workflow finished.')
+        result = study_area_builder_frame.run_study_area_builder(self.iface)
+        log.info('調査エリア設定 workflow finished.')
         return result
 
     def _run_merge_features(self, config, log):

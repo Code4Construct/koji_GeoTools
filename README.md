@@ -3,14 +3,14 @@
 Koji GeoTools is a QGIS plugin that provides a single launcher for frequently
 used vector geoprocessing workflows.
 
-It includes tools for creating project layer sets, generating ward boundary
-buffers, and extracting visible point or polygon features inside selected
-polygons.
+It includes tools for creating project layer sets, building study areas from
+boundaries and buffers, and extracting visible point or polygon features inside
+selected polygons.
 
 ## Features
 
 - `add_sets_layers`: create layer sets from CSV data for facility planning maps.
-- `ward_boundary_buffer`: create ward boundary and buffer outputs from selected features.
+- `study_area_builder`: create study area outputs from selected features or map coordinates.
 - `merge_features_in_polygon`: extract visible point and polygon features inside a selected polygon.
 
 ## Configuration
@@ -28,7 +28,7 @@ sample.qgz
 sample_KGT/
   レイヤセットを保存/
     preset.json
-  区境界＋円ポリゴン作成/
+  調査エリア設定/
     preset.json
   ポリゴン内の地物抽出/
     preset.json
@@ -46,7 +46,7 @@ sample_KGT/
 Koji GeoTools は、`kojiGIS4QGIS` から利用頻度の高いベクター処理をまとめた
 QGIS プラグインです。
 
-1つのランチャーから、レイヤセット作成、区境界・バッファ作成、ポリゴン内の
+1つのランチャーから、レイヤセット作成、調査エリア設定、ポリゴン内の
 地物抽出を起動できます。
 
 設定ファイルはプラグイン内に同梱せず、QGISプロジェクトファイルの横に作成

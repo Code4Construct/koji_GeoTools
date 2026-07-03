@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WardBoundaryBufferDialogBase</class>
- <widget class="QDialog" name="WardBoundaryBufferDialogBase">
+ <class>StudyAreaBuilderDialogBase</class>
+ <widget class="QDialog" name="StudyAreaBuilderDialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Ward Boundary Buffer</string>
+   <string>調査エリア設定</string>
   </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
@@ -102,7 +102,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>WardBoundaryBufferDialogBase</receiver>
+   <receiver>StudyAreaBuilderDialogBase</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -118,7 +118,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>WardBoundaryBufferDialogBase</receiver>
+   <receiver>StudyAreaBuilderDialogBase</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

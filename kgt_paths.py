@@ -8,14 +8,14 @@ from qgis.core import QgsProject
 
 TOOL_FOLDERS = {
     'layer_sets_default': 'レイヤセットを保存',
-    'ward_boundary_buffer': '区境界＋2km バッファ',
+    'study_area_builder': '調査エリア設定',
     'merge_features_in_polygon': 'ポリゴン内の地物抽出',
 }
 
 
 DEFAULT_FILENAMES = {
     'layer_sets_default': 'layer_sets_config.json',
-    'ward_boundary_buffer': 'ward_boundary_buffer_config.json',
+    'study_area_builder': 'study_area_builder_config.json',
     'merge_features_in_polygon': 'merge_features_in_polygon_config.json',
 }
 

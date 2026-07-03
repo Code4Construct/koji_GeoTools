@@ -33,14 +33,14 @@ from ..layer_tree_utils import move_layers_to_group
 from ..ui_scaling import dpi_px
 
 
-class WardBoundaryBufferSettingsCancelled(Exception):
+class StudyAreaBuilderSettingsCancelled(Exception):
     pass
 
 
-class WardBoundaryBufferOutputSettingsDialog(QDialog):
+class StudyAreaBuilderOutputSettingsDialog(QDialog):
     def __init__(self, polygon_layer_names, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("区境界＋円ポリゴン作成")
+        self.setWindowTitle("調査エリア設定")
         self.setMinimumSize(dpi_px(760), dpi_px(390))
         self.resize(dpi_px(820), dpi_px(420))
 
@@ -87,7 +87,7 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
         self.target_crs_combo.addItems(["EPSG:6674", "EPSG:4326", "EPSG:6668"])
         top_form.addRow("保存先CRS", self.target_crs_combo)
 
-        self.layer_group_name_edit = QLineEdit("区境界＋円ポリゴン作成")
+        self.layer_group_name_edit = QLineEdit("調査エリア設定")
         top_form.addRow("レイヤフォルダ名", self.layer_group_name_edit)
 
         layout.addSpacing(dpi_px(14))
@@ -195,14 +195,14 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
     def _default_output_path(self):
         project_folder = QgsProject.instance().absolutePath()
         if project_folder and os.path.exists(project_folder):
-            return os.path.join(project_folder, "ward_boundary_buffer.gpkg")
-        return os.path.expanduser("~/ward_boundary_buffer.gpkg")
+            return os.path.join(project_folder, "study_area_builder.gpkg")
+        return os.path.expanduser("~/study_area_builder.gpkg")
 
     def preset_path(self):
-        return default_json_path("ward_boundary_buffer", "preset.json")
+        return default_json_path("study_area_builder", "preset.json")
 
     def config_folder(self):
-        return tool_config_folder("ward_boundary_buffer")
+        return tool_config_folder("study_area_builder")
 
     def current_config(self):
         output_path = self.output_path_edit.text().strip()
@@ -210,8 +210,8 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
             output_path += ".gpkg"
         return {
             "version": 1,
-            "preset": "ward_boundary_buffer",
-            "tool": "ward_boundary_buffer",
+            "preset": "study_area_builder",
+            "tool": "study_area_builder",
             "geometry": {
                 "buffer_distance_m": self.radius_spin.value(),
                 "merge": True,
@@ -223,7 +223,7 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
                 "gpkg_path": output_path,
                 "layer_name": self.polygon_layer_name_edit.text().strip() or "selected_polygons_red_outline",
                 "crs": self.target_crs_combo.currentText().strip() or "EPSG:6674",
-                "layer_group_name": self.layer_group_name_edit.text().strip() or "区境界＋円ポリゴン作成",
+                "layer_group_name": self.layer_group_name_edit.text().strip() or "調査エリア設定",
                 "add_to_project": True,
             },
             "style": {
@@ -297,7 +297,7 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
             os.makedirs(os.path.dirname(path), exist_ok=True)
             QMessageBox.information(
                 self,
-                "区境界＋バッファ作成",
+                "調査エリア設定",
                 "このプロジェクトには保存済みプリセットがまだありません。\n"
                 "現在の設定を保存する場合は「プリセット更新」を押してください。\n\n"
                 "保存先:\n{0}".format(path),
@@ -306,9 +306,9 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
         try:
             with open(path, "r", encoding="utf-8") as handle:
                 self.apply_config(json.load(handle))
-            QMessageBox.information(self, "区境界＋バッファ作成", "プリセットを呼び出しました。")
+            QMessageBox.information(self, "調査エリア設定", "プリセットを呼び出しました。")
         except Exception as exc:
-            QMessageBox.warning(self, "区境界＋バッファ作成", "プリセットを読み込めませんでした: {0}".format(exc))
+            QMessageBox.warning(self, "調査エリア設定", "プリセットを読み込めませんでした: {0}".format(exc))
 
     def update_preset(self):
         path = self.preset_path()
@@ -317,9 +317,9 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
             with open(path, "w", encoding="utf-8") as handle:
                 json.dump(self.current_config(), handle, ensure_ascii=False, indent=2)
                 handle.write("\n")
-            QMessageBox.information(self, "区境界＋バッファ作成", "プリセットを更新しました。")
+            QMessageBox.information(self, "調査エリア設定", "プリセットを更新しました。")
         except Exception as exc:
-            QMessageBox.warning(self, "区境界＋バッファ作成", "プリセットを更新できませんでした: {0}".format(exc))
+            QMessageBox.warning(self, "調査エリア設定", "プリセットを更新できませんでした: {0}".format(exc))
 
     def load_config_file(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -333,15 +333,15 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
         try:
             with open(path, "r", encoding="utf-8") as handle:
                 self.apply_config(json.load(handle))
-            QMessageBox.information(self, "区境界＋円ポリゴン作成", "設定を読み込みました。")
+            QMessageBox.information(self, "調査エリア設定", "設定を読み込みました。")
         except Exception as exc:
-            QMessageBox.warning(self, "区境界＋円ポリゴン作成", "設定を読み込めませんでした: {0}".format(exc))
+            QMessageBox.warning(self, "調査エリア設定", "設定を読み込めませんでした: {0}".format(exc))
 
     def save_config_file(self):
         path, _ = QFileDialog.getSaveFileName(
             self,
             "設定を保存",
-            default_json_path("ward_boundary_buffer"),
+            default_json_path("study_area_builder"),
             "JSON Files (*.json);;All Files (*.*)",
         )
         if not path:
@@ -352,9 +352,9 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
             with open(path, "w", encoding="utf-8") as handle:
                 json.dump(self.current_config(), handle, ensure_ascii=False, indent=2)
                 handle.write("\n")
-            QMessageBox.information(self, "区境界＋円ポリゴン作成", "設定を保存しました。")
+            QMessageBox.information(self, "調査エリア設定", "設定を保存しました。")
         except Exception as exc:
-            QMessageBox.warning(self, "区境界＋円ポリゴン作成", "設定を保存できませんでした: {0}".format(exc))
+            QMessageBox.warning(self, "調査エリア設定", "設定を保存できませんでした: {0}".format(exc))
 
     def browse_output(self):
         path, _ = QFileDialog.getSaveFileName(
@@ -416,7 +416,7 @@ class WardBoundaryBufferOutputSettingsDialog(QDialog):
             "star_layer_name": self.star_layer_name_edit.text().strip() or "selected_points_red_star",
             "polygon_output_layer_name": self.polygon_layer_name_edit.text().strip() or "selected_polygons_red_outline",
             "target_crs": self.target_crs_combo.currentText().strip() or "EPSG:6674",
-            "layer_group_name": self.layer_group_name_edit.text().strip() or "区境界＋円ポリゴン作成",
+            "layer_group_name": self.layer_group_name_edit.text().strip() or "調査エリア設定",
             "buffer_distance_m": self.radius_spin.value(),
             "outline_width_mm": self.outline_width_spin.value(),
             "outline_color": self.outline_color,
@@ -460,7 +460,7 @@ def visible_polygon_layers():
     return polygon_layers
 
 
-def collect_ward_boundary_buffer_output_settings(iface):
+def collect_study_area_builder_output_settings(iface):
     polygon_layers = visible_polygon_layers()
 
     if not polygon_layers:
@@ -472,10 +472,10 @@ def collect_ward_boundary_buffer_output_settings(iface):
     if "区域EPSG_6674" in polygon_layer_names:
         default_index = polygon_layer_names.index("区域EPSG_6674")
 
-    dialog = WardBoundaryBufferOutputSettingsDialog(polygon_layer_names, iface.mainWindow())
+    dialog = StudyAreaBuilderOutputSettingsDialog(polygon_layer_names, iface.mainWindow())
     dialog.polygon_layer_combo.setCurrentIndex(default_index)
     if dialog.exec_() != QDialog.Accepted:
-        raise WardBoundaryBufferSettingsCancelled()
+        raise StudyAreaBuilderSettingsCancelled()
     settings = dialog.settings()
     selected_polygon_layer_name = settings["polygon_layer_name"]
     if not settings["output_path"]:
@@ -483,7 +483,7 @@ def collect_ward_boundary_buffer_output_settings(iface):
     return settings
 
 
-def run_ward_boundary_buffer(iface, settings=None):
+def run_study_area_builder(iface, settings=None):
     """
     選択した地物について、
     1) 地物を星印で保存
@@ -507,7 +507,7 @@ def run_ward_boundary_buffer(iface, settings=None):
     b05 = b05save_selected_points_star
 
     if settings is None:
-        settings = collect_ward_boundary_buffer_output_settings(iface)
+        settings = collect_study_area_builder_output_settings(iface)
     selected_polygon_layer_name = settings["polygon_layer_name"]
 
     print(f"選択したポリゴンレイヤ: {selected_polygon_layer_name}")

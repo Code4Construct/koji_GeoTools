@@ -33,10 +33,10 @@ PRESETS = {
             },
         },
     },
-    'ward_boundary_buffer': {
-        'label': '区境界＋2km バッファ',
-        'tool': 'ward_boundary_buffer',
-        'description': '選択した地物から区境界や2kmバッファを作成します。',
+    'study_area_builder': {
+        'label': '調査エリア設定',
+        'tool': 'study_area_builder',
+        'description': '選択地点や地図上の座標を中心に、任意の半径で調査エリア円を作成・保存できます。行政区域と結合した調査エリアの設定にも対応しています。',
         'config': {
             'geometry': {
                 'buffer_distance_m': 2000,
