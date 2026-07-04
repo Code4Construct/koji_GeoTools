@@ -1,16 +1,17 @@
 [general]
 name=Koji GeoTools
 qgisMinimumVersion=3.28
-description=Project-based layer set, 調査エリア設定, and polygon feature extraction tools for QGIS.
-version=0.2
+description=A QGIS toolbar launcher for layer-set creation, study-area setup, and feature extraction inside selected polygons.
+version=1.0.0
 author=Code4Construct
 email=ubonira@gmail.com
-about=Koji GeoTools provides a single QGIS launcher for project-based geoprocessing workflows: creating layer sets from CSV data, building study areas from boundaries and buffers, and extracting visible point or polygon features inside selected polygons. Configuration files are created in the QGIS project folder; no bundled presets are required.
+changelog=1.0.0 - First stable public release with layer-set creation, study-area setup, and feature extraction tools.
+about=Koji GeoTools gathers common vector workflows into one QGIS toolbar and plugin-menu launcher. It creates layer sets from CSV data for facility-planning maps, saves study centers from selected point features or clicked map coordinates, builds study-area polygon outlines with any radius, and extracts and merges visible point and polygon features inside selected polygons. Each tool dialog supports output paths, CRS, layer names, styles, and project-specific settings.
 tracker=https://github.com/Code4Construct/koji_GeoTools/issues
 repository=https://github.com/Code4Construct/koji_GeoTools
 hasProcessingProvider=no
-tags=python,QGIS,geoprocessing,vector,buffer,polygon
-homepage=https://github.com/Code4Construct/koji_GeoTools#readme
+tags=python,QGIS,geoprocessing,vector,buffer,polygon,study area
+homepage=https://www.arinobu.org/koji_geotools.html
 category=Vector
 icon=icon.png
 license=GPL-2.0-or-later

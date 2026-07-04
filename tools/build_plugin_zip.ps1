@@ -27,6 +27,7 @@ $excludeDirs = @(
 )
 
 $excludeFiles = @(
+    ".editorconfig",
     ".gitignore",
     "*.pyc",
     "*.pyo",
