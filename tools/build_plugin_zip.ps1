@@ -67,7 +67,33 @@ Get-ChildItem -LiteralPath $stagingPlugin -Recurse -Force | Where-Object {
 if (Test-Path $zipPath) {
     Remove-Item -LiteralPath $zipPath -Force
 }
-Compress-Archive -Path $stagingPlugin -DestinationPath $zipPath -Force
+
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$stagingRootPath = (Resolve-Path $stagingRoot).Path
+if (-not $stagingRootPath.EndsWith([IO.Path]::DirectorySeparatorChar)) {
+    $stagingRootPath = "$stagingRootPath$([IO.Path]::DirectorySeparatorChar)"
+}
+$zip = [IO.Compression.ZipFile]::Open(
+    (Join-Path (Resolve-Path $outputRoot).Path "$pluginName.zip"),
+    [System.IO.Compression.ZipArchiveMode]::Create
+)
+try {
+    Get-ChildItem -LiteralPath $stagingPlugin -Recurse -File -Force | ForEach-Object {
+        $relativePath = $_.FullName.Substring($stagingRootPath.Length).Replace([IO.Path]::DirectorySeparatorChar, "/")
+        $relativePath = $relativePath.Replace([IO.Path]::AltDirectorySeparatorChar, "/")
+        [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+            $zip,
+            $_.FullName,
+            $relativePath,
+            [System.IO.Compression.CompressionLevel]::Optimal
+        ) | Out-Null
+    }
+}
+finally {
+    $zip.Dispose()
+}
+
 Remove-Item -LiteralPath $stagingRoot -Recurse -Force
 
 Write-Host "Created $zipPath"
