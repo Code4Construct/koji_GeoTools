@@ -2,7 +2,7 @@
 name=Koji GeoTools
 qgisMinimumVersion=3.28
 description=A QGIS toolbar launcher for layer-set creation, study-area setup, and feature extraction inside selected polygons.
-version=1.0.0
+version=1.0.1
 author=Code4Construct
 email=ubonira@gmail.com
 changelog=1.0.0 - First stable public release with layer-set creation, study-area setup, and feature extraction tools.
@@ -11,7 +11,7 @@ tracker=https://github.com/Code4Construct/koji_GeoTools/issues
 repository=https://github.com/Code4Construct/koji_GeoTools
 hasProcessingProvider=no
 tags=python,QGIS,geoprocessing,vector,buffer,polygon,study area
-homepage=https://www.arinobu.org/koji_geotools.html
+homepage=https://www.arinobu.org/koji_GeoTools.html
 category=Vector
 icon=icon.png
 license=GPL-2.0-or-later
