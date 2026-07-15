@@ -35,7 +35,7 @@ def project_kgt_root(create=True):
         filename = project.fileName()
         project_name = os.path.splitext(os.path.basename(filename))[0] if filename else '未保存プロジェクト'
 
-    root = os.path.join(project_folder, '{0}_KGT'.format(_safe_folder_name(project_name)))
+    root = os.path.join(project_folder, '{0}_KGTconfig'.format(_safe_folder_name(project_name)))
     if create:
         os.makedirs(root, exist_ok=True)
         for folder_name in TOOL_FOLDERS.values():

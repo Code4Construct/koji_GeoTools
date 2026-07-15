@@ -25,7 +25,7 @@ Example:
 
 ```text
 sample.qgz
-sample_KGT/
+sample_KGTconfig/
   layer_sets/
     preset.json
   study_area/
