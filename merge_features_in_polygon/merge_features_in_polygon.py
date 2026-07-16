@@ -20,13 +20,17 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QVBoxLayout,
 )
-from qgis.core import QgsMapLayer, QgsProject, QgsWkbTypes
+from qgis.core import QgsMapLayer, QgsProject, QgsWkbTypes, QgsMessageLog, Qgis
 from qgis.gui import QgsMapToolIdentify
 
 from . import merge_visible_features_in_selected_polygon
 from .resources import *
 from ..kgt_paths import default_json_path, tool_config_folder
 from ..ui_scaling import dpi_px
+
+
+def _log_warning(message):
+    QgsMessageLog.logMessage(str(message), 'Koji GeoTools', Qgis.Warning)
 
 
 class MergeFeatureSettingsCancelled(Exception):
@@ -481,13 +485,13 @@ class MergeFeaturesInPolygon:
         if getattr(current_tool, 'is_koji_merge_pick_tool', False):
             try:
                 current_tool.cancel()
-            except Exception:
-                pass
+            except Exception as exc:
+                _log_warning("Failed to cancel active polygon pick tool: {0}".format(exc))
         if self.pick_tool is not None:
             try:
                 self.pick_tool.cancel()
-            except Exception:
-                pass
+            except Exception as exc:
+                _log_warning("Failed to cancel stored polygon pick tool: {0}".format(exc))
             self.pick_tool = None
 
     def run_with_settings(self, settings):

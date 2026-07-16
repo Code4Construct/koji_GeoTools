@@ -17,7 +17,9 @@ from qgis.core import (
     QgsUnitTypes,
     QgsVectorLayerSimpleLabeling,
     QgsRuleBasedLabeling,
-    QgsVectorFileWriter
+    QgsVectorFileWriter,
+    QgsMessageLog,
+    Qgis
 )
 
 # ==========================================
@@ -35,6 +37,10 @@ WARD_NAMES = [
     "西淀川区", "東淀川区", "東成区", "生野区", "旭区", "城東区", "阿倍野区", "住吉区",
     "東住吉区", "西成区", "淀川区", "鶴見区", "住之江区", "平野区", "北区", "中央区"
 ]
+
+
+def _log_warning(message):
+    QgsMessageLog.logMessage(str(message), 'Koji GeoTools', Qgis.Warning)
 
 
 def get_or_create_group(root, group_name):
@@ -413,15 +419,18 @@ def _write_layer_to_gpkg(layer, output_path, layer_name, transform_context, firs
         if destination_crs.isValid() and destination_crs != layer.crs():
             try:
                 options.ct = QgsCoordinateTransform(layer.crs(), destination_crs, QgsProject.instance())
-            except Exception:
-                pass
+            except Exception as exc:
+                _log_warning(
+                    "Failed to set GeoPackage coordinate transform for layer "
+                    "{0}: {1}".format(layer.name(), exc)
+                )
     try:
         if first_layer:
             options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteFile
         else:
             options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to set GeoPackage overwrite action: {0}".format(exc))
 
     result = QgsVectorFileWriter.writeAsVectorFormatV3(
         layer,
@@ -549,8 +558,13 @@ def run_configured_layers(
             if saved_layer.isValid():
                 try:
                     saved_layer.setRenderer(layer.renderer().clone())
-                except Exception:
-                    pass
+                except Exception as exc:
+                    _log_warning(
+                        "Failed to copy renderer to saved layer {0}: {1}".format(
+                            layer_name,
+                            exc,
+                        )
+                    )
                 apply_configured_label(
                     saved_layer,
                     config.get('label_field') or config.get('label'),

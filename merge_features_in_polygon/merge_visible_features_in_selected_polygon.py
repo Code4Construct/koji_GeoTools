@@ -14,7 +14,9 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsFeatureRequest,
     QgsVectorFileWriter,
-    QgsGeometry
+    QgsGeometry,
+    QgsMessageLog,
+    Qgis
 )
 from PyQt5.QtCore import QVariant
 
@@ -33,39 +35,43 @@ ADD_SOURCE_FID = True           # 元feature idを保存したい場合
 SOURCE_FID_FIELD_NAME = "src_fid"
 
 
+def _log_warning(message):
+    QgsMessageLog.logMessage(str(message), 'Koji GeoTools', Qgis.Warning)
+
+
 def apply_layer_display_settings(source_layer, target_layer):
     if source_layer is None or target_layer is None:
         return
 
     try:
         target_layer.setRenderer(source_layer.renderer().clone())
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy renderer: {0}".format(exc))
 
     try:
         if source_layer.labeling() is not None:
             target_layer.setLabeling(source_layer.labeling().clone())
         target_layer.setLabelsEnabled(source_layer.labelsEnabled())
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy labeling: {0}".format(exc))
 
     try:
         target_layer.setScaleBasedVisibility(source_layer.hasScaleBasedVisibility())
         target_layer.setMinimumScale(source_layer.minimumScale())
         target_layer.setMaximumScale(source_layer.maximumScale())
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy scale visibility: {0}".format(exc))
 
     try:
         target_layer.setOpacity(source_layer.opacity())
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy layer opacity: {0}".format(exc))
 
     try:
         for key in source_layer.customPropertyKeys():
             target_layer.setCustomProperty(key, source_layer.customProperty(key))
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy layer custom properties: {0}".format(exc))
 
     target_layer.triggerRepaint()
 
@@ -314,17 +320,37 @@ def run_merge_visible_features_in_selected_polygon(
                     continue
                 test_geom = QgsGeometry(geom)
                 if to_polygon_crs is not None:
+                    transform_failed = False
                     try:
                         test_geom.transform(to_polygon_crs)
-                    except Exception:
+                    except Exception as exc:
+                        _log_warning(
+                            "Skipping point feature {0} from {1}; transform to polygon CRS failed: {2}".format(
+                                feat.id(),
+                                source_layer.name(),
+                                exc,
+                            )
+                        )
+                        transform_failed = True
+                    if transform_failed:
                         continue
                 if not merged_polygon_geom.contains(test_geom):
                     continue
                 out_geom = QgsGeometry(test_geom)
                 if to_save_crs is not None:
+                    transform_failed = False
                     try:
                         out_geom.transform(to_save_crs)
-                    except Exception:
+                    except Exception as exc:
+                        _log_warning(
+                            "Skipping point feature {0} from {1}; transform to output CRS failed: {2}".format(
+                                feat.id(),
+                                source_layer.name(),
+                                exc,
+                            )
+                        )
+                        transform_failed = True
+                    if transform_failed:
                         continue
                 new_feat = QgsFeature(fields)
                 new_feat.setGeometry(out_geom)
@@ -362,9 +388,19 @@ def run_merge_visible_features_in_selected_polygon(
                     continue
                 test_geom = QgsGeometry(geom)
                 if to_polygon_crs is not None:
+                    transform_failed = False
                     try:
                         test_geom.transform(to_polygon_crs)
-                    except Exception:
+                    except Exception as exc:
+                        _log_warning(
+                            "Skipping polygon feature {0} from {1}; transform to polygon CRS failed: {2}".format(
+                                feat.id(),
+                                source_layer.name(),
+                                exc,
+                            )
+                        )
+                        transform_failed = True
+                    if transform_failed:
                         continue
                 if QgsWkbTypes.geometryType(test_geom.wkbType()) != QgsWkbTypes.PolygonGeometry:
                     continue
@@ -372,9 +408,19 @@ def run_merge_visible_features_in_selected_polygon(
                     continue
                 out_geom = QgsGeometry(test_geom)
                 if to_save_crs is not None:
+                    transform_failed = False
                     try:
                         out_geom.transform(to_save_crs)
-                    except Exception:
+                    except Exception as exc:
+                        _log_warning(
+                            "Skipping polygon feature {0} from {1}; transform to output CRS failed: {2}".format(
+                                feat.id(),
+                                source_layer.name(),
+                                exc,
+                            )
+                        )
+                        transform_failed = True
+                    if transform_failed:
                         continue
                 new_feat = QgsFeature(fields)
                 new_feat.setGeometry(out_geom)
@@ -654,9 +700,19 @@ def run_merge_visible_features_in_selected_polygon(
                 test_geom = QgsGeometry(geom)
 
                 if to_polygon_crs is not None:
+                    transform_failed = False
                     try:
                         test_geom.transform(to_polygon_crs)
-                    except Exception:
+                    except Exception as exc:
+                        _log_warning(
+                            "Skipping point feature {0} from {1}; transform to polygon CRS failed: {2}".format(
+                                feat.id(),
+                                pt_layer.name(),
+                                exc,
+                            )
+                        )
+                        transform_failed = True
+                    if transform_failed:
                         continue
 
                 if not merged_polygon_geom.contains(test_geom):

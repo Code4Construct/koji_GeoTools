@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from qgis.core import QgsProject
+from qgis.core import QgsProject, QgsMessageLog, Qgis
+
+
+def _log_warning(message):
+    QgsMessageLog.logMessage(str(message), 'Koji GeoTools', Qgis.Warning)
 
 
 def move_layers_to_group(layers, group_name):
@@ -68,8 +72,8 @@ def copy_layer_tree_node_properties(source_layer, target_layer):
     try:
         for key in source_node.customProperties():
             target_node.setCustomProperty(key, source_node.customProperty(key))
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy layer-tree custom properties: {0}".format(exc))
 
     # QGIS stores "Show Feature Count" on the layer-tree node, not in renderer style.
     try:
@@ -77,5 +81,5 @@ def copy_layer_tree_node_properties(source_layer, target_layer):
             'showFeatureCount',
             source_node.customProperty('showFeatureCount', False),
         )
-    except Exception:
-        pass
+    except Exception as exc:
+        _log_warning("Failed to copy layer-tree feature-count property: {0}".format(exc))
