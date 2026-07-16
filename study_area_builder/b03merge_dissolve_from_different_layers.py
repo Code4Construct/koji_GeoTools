@@ -2,6 +2,46 @@ import processing
 from qgis.core import QgsProject, QgsWkbTypes
 from qgis.utils import iface
 
+
+def _fix_geometries(layer):
+    return processing.run("native:fixgeometries", {
+        "INPUT": layer,
+        "OUTPUT": "memory:"
+    })["OUTPUT"]
+
+
+def _reproject_to_crs(layer, crs):
+    if layer.crs() == crs:
+        return layer
+    return processing.run("native:reprojectlayer", {
+        "INPUT": layer,
+        "TARGET_CRS": crs,
+        "OUTPUT": "memory:"
+    })["OUTPUT"]
+
+
+def _union_layers(layers):
+    if len(layers) == 1:
+        return layers[0]
+
+    unioned = processing.run("native:union", {
+        "INPUT": layers[0],
+        "OVERLAY": layers[1],
+        "OVERLAY_FIELDS_PREFIX": "",
+        "OUTPUT": "memory:"
+    })["OUTPUT"]
+
+    for overlay in layers[2:]:
+        unioned = processing.run("native:union", {
+            "INPUT": unioned,
+            "OVERLAY": overlay,
+            "OVERLAY_FIELDS_PREFIX": "",
+            "OUTPUT": "memory:"
+        })["OUTPUT"]
+
+    return unioned
+
+
 def dissolve_selected_polygons(
     output_layer_name="dissolved_selected_polygons",
     remove_scratch_layers=True,
@@ -39,31 +79,31 @@ def dissolve_selected_polygons(
     # ③ 各レイヤの選択地物だけ抽出
     # =========================
     selected_layers = []
+    target_crs = poly_layers[0].crs()
 
     for lyr in poly_layers:
         result = processing.run("native:saveselectedfeatures", {
             "INPUT": lyr,
             "OUTPUT": "memory:"
         })
-        selected_layers.append(result["OUTPUT"])
+        selected = _reproject_to_crs(result["OUTPUT"], target_crs)
+        selected_layers.append(_fix_geometries(selected))
 
     # =========================
-    # ④ マージ
+    # ④ Union
     # =========================
-    merged = processing.run("native:mergevectorlayers", {
-        "LAYERS": selected_layers,
-        "CRS": selected_layers[0].crs(),
-        "OUTPUT": "memory:"
-    })["OUTPUT"]
+    unioned = _union_layers(selected_layers)
+    unioned = _fix_geometries(unioned)
 
     # =========================
     # ⑤ 完全Dissolve（全部まとめる）
     # =========================
     dissolved = processing.run("native:dissolve", {
-        "INPUT": merged,
+        "INPUT": unioned,
         "FIELD": [],
         "OUTPUT": "memory:"
     })["OUTPUT"]
+    dissolved = _fix_geometries(dissolved)
 
     dissolved.setName(output_layer_name)
 
