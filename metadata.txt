@@ -2,10 +2,10 @@
 name=Koji GeoTools
 qgisMinimumVersion=3.28
 description=A QGIS toolbar launcher for layer-set creation, study-area setup, and feature extraction inside selected polygons.
-version=1.0.1
+version=1.0.2
 author=Code4Construct
 email=ubonira@gmail.com
-changelog=1.0.0 - First stable public release with layer-set creation, study-area setup, and feature extraction tools.
+changelog=1.0.2 - Use union-based dissolved study-area polygons with geometry fixing for qgis2web compatibility. 1.0.0 - First stable public release with layer-set creation, study-area setup, and feature extraction tools.
 about=Koji GeoTools gathers common vector workflows into one QGIS toolbar and plugin-menu launcher. It creates layer sets from CSV data for facility-planning maps, saves study centers from selected point features or clicked map coordinates, builds study-area polygon outlines with any radius, and extracts and merges visible point and polygon features inside selected polygons. Each tool dialog supports output paths, CRS, layer names, styles, and project-specific settings.
 tracker=https://github.com/Code4Construct/koji_GeoTools/issues
 repository=https://github.com/Code4Construct/koji_GeoTools
