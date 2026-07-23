@@ -18,7 +18,7 @@ from qgis.core import (
     QgsMessageLog,
     Qgis
 )
-from PyQt5.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant
 
 from ..layer_tree_utils import (
     copy_layer_tree_node_properties,
